@@ -7,6 +7,12 @@ public static class Url
 {
     public static void OpenWiki(string id)
     {
+        if (!RedirectRegistry.TryGetValue(id, out var link))
+        {
+            Application.OpenURL(link);
+            return;
+        }
+
         var locale = Settings.UseLocalizedLinks.Value ? LocaleManagerClass.LocaleManagerClass.String_0 : "en";
 
         var itemName = LocaleManagerClass.LocaleManagerClass.method_7(id + " Name", locale);
