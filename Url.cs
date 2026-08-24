@@ -1,4 +1,5 @@
 using System.Text.RegularExpressions;
+using EFT;
 using UnityEngine;
 
 namespace WikiLinks;
@@ -7,9 +8,10 @@ public static class Url
 {
     public static void OpenWiki(string id)
     {
-        var locale = Settings.UseLocalizedLinks.Value ? LocaleManagerClass.LocaleManagerClass.String_0 : "en";
+        var locale = Settings.UseLocalizedLinks.Value ? LocalizationManager.Instance.Culture : "en";
 
-        var itemName = LocaleManagerClass.LocaleManagerClass.method_7(id + " Name", locale);
+        LocalizationManager.Instance.TryGetLocalization($"{id} Name", locale, out var itemName);
+        
         var wikiName = WikiEncode(itemName);
 
         var localePath = locale == "en" ? string.Empty : $"{locale}/";
