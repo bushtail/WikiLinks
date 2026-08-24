@@ -1,4 +1,5 @@
 using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 using EFT;
 using UnityEngine;
 
@@ -6,17 +7,27 @@ namespace WikiLinks;
 
 public static class Url
 {
-    public static void OpenWiki(string id)
+    public static async Task OpenWiki(string id)
     {
         var locale = Settings.UseLocalizedLinks.Value ? LocalizationManager.Instance.Culture : "en";
 
         LocalizationManager.Instance.TryGetLocalization($"{id} Name", locale, out var itemName);
         
         var wikiName = WikiEncode(itemName);
-
+        
         var localePath = locale == "en" ? string.Empty : $"{locale}/";
 
-        Application.OpenURL($"https://escapefromtarkov.fandom.com/{localePath}wiki/{wikiName}");
+        var baseUrl = $"https://escapefromtarkov.fandom.com/{localePath}wiki/{wikiName}";
+            
+        if (Settings.UseWayback.Value)
+        {
+            var archiveUrl = await Wayback.GetWaybackUrl(baseUrl);
+            Application.OpenURL(archiveUrl ?? baseUrl);
+        }
+        else
+        {
+            Application.OpenURL(baseUrl);
+        }
     }
 
     // This is NOT standard url encoding. This is what the wiki does with names.

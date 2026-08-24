@@ -48,7 +48,7 @@ public static class ContextMenuPatches
             }
 
             var text = $"{"OPEN".Localized()} WIKI";
-            __result._dynamicInteractions["OPEN WIKI"] = new DynamicContextInteraction("OPEN WIKI", text, () => Url.OpenWiki(item.TemplateId), ResourcesCache.Pop<Sprite>("Characteristics/Icons/Inspect"));
+            __result._dynamicInteractions["OPEN WIKI"] = new DynamicContextInteraction("OPEN WIKI", text, () => _ = Url.OpenWiki(item.TemplateId), ResourcesCache.Pop<Sprite>("Characteristics/Icons/Inspect"));
         }
     }
 

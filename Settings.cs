@@ -12,6 +12,7 @@ namespace WikiLinks
         public static ConfigEntry<bool> EnableContextMenu { get; set; }
         public static ConfigEntry<bool> EnableQuestButton { get; set; }
         public static ConfigEntry<bool> UseLocalizedLinks { get; set; }
+        public static ConfigEntry<bool> UseWayback { get; set; }
 
         public static void Init(ConfigFile config)
         {
@@ -42,6 +43,15 @@ namespace WikiLinks
                 false,
                 new ConfigDescription(
                     "Links will go to your language's version of the page instead of English. Be warned that many pages are not translated and may not exist in your language.",
+                    null,
+                    new ConfigurationManagerAttributes { })));
+            
+            configEntries.Add(UseWayback = config.Bind(
+                GeneralSection,
+                "Use Wayback Machine",
+                false,
+                new ConfigDescription(
+                    "Use the Wayback Machine to get a link to the page as it was on the beta version of the game. This also takes slightly longer to open the webpage.",
                     null,
                     new ConfigurationManagerAttributes { })));
 
