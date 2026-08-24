@@ -1,7 +1,9 @@
 using System.Linq;
 using System.Reflection;
+using EFT;
 using EFT.InventoryLogic;
 using EFT.UI;
+using EFT.Utilities;
 using HarmonyLib;
 using SPT.Reflection.Patching;
 using UnityEngine;
@@ -26,7 +28,7 @@ public static class ContextMenuPatches
         }
 
         [PatchPostfix]
-        private static void Prefix(ItemContextAbstractClass itemContext, ItemInfoInteractionsAbstractClass<EItemInfoButton> __result)
+        private static void Prefix(ItemContext itemContext, ContextInteractions<EItemInfoButton> __result)
         {
             if (!Settings.EnableContextMenu.Value)
             {
@@ -46,7 +48,7 @@ public static class ContextMenuPatches
             }
 
             var text = $"{"OPEN".Localized()} WIKI";
-            __result.Dictionary_0["OPEN WIKI"] = new("OPEN WIKI", text, () => Url.OpenWiki(item.TemplateId), CacheResourcesPopAbstractClass.Pop<Sprite>("Characteristics/Icons/Inspect"));
+            __result._dynamicInteractions["OPEN WIKI"] = new DynamicContextInteraction("OPEN WIKI", text, () => Url.OpenWiki(item.TemplateId), ResourcesCache.Pop<Sprite>("Characteristics/Icons/Inspect"));
         }
     }
 
@@ -81,11 +83,10 @@ public static class ContextMenuPatches
             foreach (var targetName in Targets)
             {
                 var targetButton = parent.Find(targetName);
-                if (targetButton != null && targetButton.gameObject.activeInHierarchy)
-                {
-                    targetIndex = targetButton.GetSiblingIndex();
-                    break;
-                }
+                if (!targetButton || !targetButton.gameObject.activeInHierarchy) { continue; }
+
+                targetIndex = targetButton.GetSiblingIndex();
+                break;
             }
 
             __result.Transform.SetSiblingIndex(targetIndex);

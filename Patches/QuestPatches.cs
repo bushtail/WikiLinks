@@ -1,15 +1,15 @@
 using System.Reflection;
+using EFT;
 using EFT.GlobalEvents;
 using EFT.Quests;
 using EFT.UI;
+using EFT.Utilities;
 using HarmonyLib;
 using SPT.Reflection.Patching;
 using UnityEngine;
 using UnityEngine.UI;
 
 namespace WikiLinks;
-
-using DailyQuest = GClass3996;
 
 public static class QuestPatches
 {
@@ -26,13 +26,13 @@ public static class QuestPatches
     {
         protected override MethodBase GetTargetMethod()
         {
-            return AccessTools.DeclaredMethod(typeof(QuestObjectivesView), nameof(QuestObjectivesView.Show)).MakeGenericMethod([typeof(QuestClass)]);
+            return AccessTools.DeclaredMethod(typeof(QuestObjectivesView), nameof(QuestObjectivesView.Show)).MakeGenericMethod([typeof(Quest)]);
         }
 
         [PatchPostfix]
         public static void Postfix(QuestObjectivesView __instance, IConditional conditional)
         {
-            if (conditional is not QuestClass quest)
+            if (conditional is not Quest quest)
             {
                 return;
             }
@@ -74,7 +74,7 @@ public static class QuestPatches
         }
 
         [PatchPostfix]
-        public static void Postfix(UIElement __instance, QuestClass quest)
+        public static void Postfix(UIElement __instance, Quest quest)
         {
             var description = __instance.transform.Find("Center/Scrollview/Content/CenterBlock/DescriptionBlock");
 
@@ -114,7 +114,7 @@ public static class QuestPatches
         return null;
     }
 
-    private static SimpleContextMenuButton GetOrCreateButton(QuestClass quest, UIElement owner, Transform parent)
+    private static SimpleContextMenuButton GetOrCreateButton(Quest quest, UIElement owner, Transform parent)
     {
         SimpleContextMenuButton button = GetButton(parent);
         if (button == null)
@@ -134,7 +134,7 @@ public static class QuestPatches
         var text = $"{"OPEN".Localized()} WIKI";
 
         button.Close(); // otherwise the clicks will pile up
-        button.Show(text, text, CacheResourcesPopAbstractClass.Pop<Sprite>("Characteristics/Icons/Inspect"), () => Url.OpenWiki(quest.Id), () => { });
+        button.Show(text, text, ResourcesCache.Pop<Sprite>("Characteristics/Icons/Inspect"), () => Url.OpenWiki(quest.Id), () => { });
 
         owner.AddDisposable(button.Close);
 
