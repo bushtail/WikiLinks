@@ -1,6 +1,7 @@
 ﻿using System;
-using System.Threading.Tasks;
+using System.Collections.Generic;
 using System.Net.Http;
+using System.Threading.Tasks;
 using JetBrains.Annotations;
 using Newtonsoft.Json;
 
@@ -9,29 +10,38 @@ namespace WikiLinks;
 internal class Wayback
 {
     private static readonly HttpClient Client = new();
-    private static readonly DateTime LastBetaDate = new(2025, 11, 14, 0, 0, 0, DateTimeKind.Utc);
-    
+    private static readonly string LastBetaDate = new DateTime(2025, 11, 14, 0, 0, 0, DateTimeKind.Utc).ToUniversalTime().ToString("yyyyMMdd");
+    private static readonly Dictionary<string, string> Cache = [];
+
     internal static async Task<string> GetWaybackUrl(string url)
     {
-        var timestamp = LastBetaDate.ToUniversalTime().ToString("yyyyMMdd");
-        var apiUrl = $"https://archive.org/wayback/available?url={Uri.EscapeDataString(url)}&timestamp={timestamp}";
+        if (Cache.TryGetValue(url, out string cachedResult))
+        {
+            return cachedResult;
+        }
+
+        var apiUrl = $"https://archive.org/wayback/available?url={Uri.EscapeDataString(url)}&timestamp={LastBetaDate}";
 
         try
         {
             var json = await Client.GetStringAsync(apiUrl);
-            var result = JsonConvert.DeserializeObject<WaybackResponse>(json);
+            var response = JsonConvert.DeserializeObject<WaybackResponse>(json);
 
-            return result.ArchivedSnapshots?.Closest?.Available == true ? result.ArchivedSnapshots.Closest.Url : null;
+            var result = response.ArchivedSnapshots?.Closest?.Available == true ? response.ArchivedSnapshots.Closest.Url : null;
+            Cache[url] = result;
+
+            return result;
         }
         catch
         {
             return null;
         }
     }
-    
+
     internal class ArchivedSnapshots
     {
-        [JsonProperty("closest")] [CanBeNull]
+        [CanBeNull]
+        [JsonProperty("closest")]
         public ClosestSnapshot Closest { get; set; }
     }
 

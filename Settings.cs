@@ -45,7 +45,7 @@ namespace WikiLinks
                     "Links will go to your language's version of the page instead of English. Be warned that many pages are not translated and may not exist in your language.",
                     null,
                     new ConfigurationManagerAttributes { })));
-            
+
             configEntries.Add(UseWayback = config.Bind(
                 GeneralSection,
                 "Use Wayback Machine",

@@ -12,13 +12,13 @@ public static class Url
         var locale = Settings.UseLocalizedLinks.Value ? LocalizationManager.Instance.Culture : "en";
 
         LocalizationManager.Instance.TryGetLocalization($"{id} Name", locale, out var itemName);
-        
+
         var wikiName = WikiEncode(itemName);
-        
+
         var localePath = locale == "en" ? string.Empty : $"{locale}/";
 
         var baseUrl = $"https://escapefromtarkov.fandom.com/{localePath}wiki/{wikiName}";
-            
+
         if (Settings.UseWayback.Value)
         {
             var archiveUrl = await Wayback.GetWaybackUrl(baseUrl);
