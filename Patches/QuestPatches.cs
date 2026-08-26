@@ -134,7 +134,7 @@ public static class QuestPatches
         var text = $"{"OPEN".Localized()} WIKI";
 
         button.Close(); // otherwise the clicks will pile up
-        button.Show(text, text, ResourcesCache.Pop<Sprite>("Characteristics/Icons/Inspect"), () => Url.OpenWiki(quest.Id), () => { });
+        button.Show(text, text, ResourcesCache.Pop<Sprite>("Characteristics/Icons/Inspect"), () => _ = Url.OpenWiki(quest.Id), () => { });
 
         owner.AddDisposable(button.Close);
 
