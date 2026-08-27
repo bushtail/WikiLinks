@@ -1,3 +1,4 @@
+using System;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using EFT;
@@ -33,10 +34,12 @@ public static class Url
     // This is NOT standard url encoding. This is what the wiki does with names.
     public static string WikiEncode(string input)
     {
-        return Regex.Replace(input, "<[^>]+>", string.Empty) // Remove xml-style tags (added by mods like ItemInfo)
+        var sanitized = Regex.Replace(input, "<[^>]+>", string.Empty) // Remove xml-style tags (added by mods like ItemInfo)
             .Replace("[K] ", string.Empty) // KappaMarker mod
             .Replace(" [PVE ZONE]", string.Empty) // Ref Friendly Quests mod
             .Replace(' ', '_') // Replace spaces with underscore
             .Replace("#", string.Empty); // Remove # character
+
+        return Uri.EscapeDataString(sanitized); // Encode remaining special characters (e.g. '?' -> %3F)
     }
 }
